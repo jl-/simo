@@ -1,0 +1,15 @@
+.editor {
+    white-space: pre;
+    blockquote {
+        margin-left: 0;
+        padding-left: 1em;
+        border-left: 3px solid #f2f2f2;
+    }
+    a {
+        &,
+        &:hover,
+        &:focus {
+            color: #096DD9;
+        }
+    }
+}

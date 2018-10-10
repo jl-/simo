@@ -1,0 +1,16 @@
+@import './icons/style.css';
+
+.toolbar {
+    // position: absolute;
+    border-radius: .2em;
+    background-color: #fff;
+    &__icon {
+        padding: .4em;
+        display: inline-block;
+        font-size: 1.2em;
+        cursor: pointer;
+        &--active {
+            background-color: aqua;
+        }
+    }
+}
