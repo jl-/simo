@@ -1,0 +1,21 @@
+{
+  "name": "simo",
+  "version": "0.0.0",
+  "description": "Rich-Text Editor",
+  "main": "index.js",
+  "repository": "https://github.com/jl-/simo.git",
+  "author": "z.cius <zr.cius@gmail.com>",
+  "license": "MIT",
+  "scripts": {
+    "build:release": "babel src --out-dir . --copy-files",
+    "build:clear": "rm -rf ./core ./formats ./meta ./models ./modules ./renderer ./styles ./utils ./index.js"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.1.2",
+    "@babel/core": "^7.1.2",
+    "@babel/plugin-proposal-class-properties": "^7.1.0",
+    "@babel/plugin-proposal-function-bind": "^7.0.0",
+    "@babel/polyfill": "^7.0.0",
+    "@babel/preset-env": "^7.1.0"
+  }
+}
