@@ -29,7 +29,7 @@ export default class Schema {
     isAtomic (meta) {
         if (this.isInline(meta.node)) return !meta.isSolo;
         if (this.isBlock(meta.node)) return true;
-        return false;
+        return !meta.parent;
     }
 
     normalize (nodes) {
