@@ -14,7 +14,6 @@
 
     export default {
         mounted () {
-            console.log(this.$);
             this.editor = new Editor({ readonly: false });
             this.editor.mount(this.$refs.editor, initState);
         }
