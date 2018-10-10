@@ -1,21 +1,21 @@
 import { VOID_CHAR } from '../../meta/node';
 import * as actions from '../../meta/actions';
 
-export function match (meta) {
-    return meta.first === meta.node &&
-        !/^h[1-6]$/.test(meta.block[0].type) &&
-        /^#{1,6} $/.test(meta.node.text.slice(0, meta.offset));
-}
+export function handleInput (change, meta, editor) {
+    // proceed only if cursor is at the front of current block,
+    // and current block is not already a heading type,
+    // and text before cursor point matches /^#{1,6} $/ for heading
+    if (meta.first !== meta.node || /^h[1-6]$/.test(meta.block[0].type) ||
+        !/^#{1,6} $/.test(meta.node.text.slice(0, meta.offset))) return false;
 
-export function handle (change, { node, blocks, offset, keys }, editor) {
-    let at = keys.slice(0, blocks.length);
-    const text = node.text.length > offset ? '' : VOID_CHAR;
-    change[actions.REPLACE_TEXT]({ keys, offset: 0 }, text, offset);
-    if (blocks[0].type === 'li') {
-        const block = change.state.find(at);
-        const op = change[actions.EXTEND_NODE](at, block, 'block');
-        at = at.concat(op.data[0].key);
-    }
-    const block = change.state.find(at);
-    editor.formatter.toggle('heading', change, at, block, offset - 1);
+    let at = meta.keys.slice(0, meta.blocks.length);
+
+    // 1. normalize: remove pattern text before the cursor point.
+    const text = meta.node.text.length > meta.offset ? '' : VOID_CHAR;
+    change[actions.REPLACE_TEXT]({ keys: meta.keys, offset: 0 }, text, meta.offset);
+
+    // 2. delegate to formatter for applying the heading operation.
+    editor.formatter.toggle('heading', change, at, meta.offset - 1);
+
+    return true;
 }
