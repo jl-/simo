@@ -4,10 +4,9 @@ import * as Heading from './heading';
 import * as Quotation from './quotation';
 import * as actions from '../../meta/actions';
 import * as hyperkit from '../../core/hyperkit';
-import { lastOf } from '../../utils/logic';
 import { VOID_CHAR } from '../../meta/node';
 import { editorEvents, keyCodes } from '../../meta/events';
-import { isEdgeBranch, keysOf, adjacentLeafOf, adjacentPoint } from '../../utils/node';
+import { isEdgeBranch, adjacentLeafOf, adjacentPoint } from '../../utils/node';
 
 export default class Hypergen extends Module {
     [editorEvents.get('keydown')] (change, event, editor) {
