@@ -21,10 +21,8 @@ export class Quotation extends Format {
         console.log('// quote!', active, change, editor);
     }
 
-    toggle (blocks, change) {
-        const target = blocks[0].clone(false);
-        const keys = change.selection.focus.keys;
-        const at = keys.slice(0, blocks.length);
+    toggle (change, at) {
+        const target = change.state.find(at).clone(false);
         target.type = target.type === 'blockquote' ? 'block' : 'blockquote';
         change[actions.REPLACE_NODES]({ at, data: [target] });
     }

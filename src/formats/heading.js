@@ -19,9 +19,16 @@ export class Heading extends Format {
         console.log('// heading!', active, change, editor);
     }
 
-    toggle (change, at, node, level) {
+    toggle (change, at, level) {
+        // if current block is a list-item, wrap its content with normal block
+        let block = change.state.find(at);
+        if (block.type === 'li') {
+            block = change[actions.EXTEND_NODE](at, block, 'block').data[0];
+            at = at.concat(block.key);
+        }
+
         const type = `h${level}`;
-        const target = node.clone(false);
+        const target = block.clone(false);
         target.type = target.type === type ? 'block' : type;
         change[actions.REPLACE_NODES]({ at, data: [target] });
     }

@@ -27,7 +27,8 @@ export class List extends Format {
         console.log('// list!', active, change, editor);
     }
 
-    toggle (change, at, node, type) {
+    toggle (change, at, type) {
+        const node = change.state.find(at);
         const op = change[actions.CAST_NODE](at, node, { type });
         change[actions.EXTEND_NODE](at, op.data, 'li');
     }
