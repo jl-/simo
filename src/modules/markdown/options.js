@@ -1,9 +1,9 @@
-import * as list from './list';
-import * as heading from './heading';
-import * as quotation from './quotation';
+import * as List from './list';
+import * as Heading from './heading';
+import * as Quotation from './quotation';
 
 export const builtinPatterns = [
-    heading, list, quotation
+    List, Heading, Quotation
 ];
 
 export function mergePatterns (patterns) {
