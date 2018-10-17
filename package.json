@@ -7,7 +7,8 @@
   "author": "z.cius <zr.cius@gmail.com>",
   "license": "MIT",
   "scripts": {
-    "build:release": "babel src --out-dir . --copy-files",
+    "test": "cross-env NODE_ENV=test tupe",
+    "build:release": "babel src -d . --copy-files",
     "build:clear": "rm -rf ./core ./formats ./meta ./models ./modules ./renderer ./styles ./utils ./index.js"
   },
   "devDependencies": {
@@ -19,6 +20,24 @@
     "@babel/plugin-transform-runtime": "^7.1.0",
     "@babel/polyfill": "^7.0.0",
     "@babel/preset-env": "^7.1.0",
-    "@babel/runtime": "^7.1.2"
+    "@babel/runtime": "^7.1.2",
+    "babel-plugin-istanbul": "^5.1.0",
+    "babel-preset-power-assert": "^3.0.0",
+    "cross-env": "^5.2.0",
+    "testdouble": "^3.8.2",
+    "tupe": "^0.0.0-alpha.0"
+  },
+  "tupe": {
+    "files": [
+      "test/**/!(_)*.js"
+    ],
+    "tmpdir": ".tmp",
+    "fail-fast": false,
+    "coverage": {
+      "dir": ".coverage",
+      "reporters": [
+        "text"
+      ]
+    }
   }
 }
