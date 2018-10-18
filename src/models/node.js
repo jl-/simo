@@ -8,6 +8,7 @@ export default class Node {
         this.data = data.data;
         this.meta = data.meta;
         this.text = data.text || VOID_CHAR;
+        this.attrs = data.attrs;
         this.formats = data.formats;
         this.key = data.key && !rekey ? data.key : uniq(data.key);
         this.nodes = data.nodes && data.nodes.length ?
