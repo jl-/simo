@@ -23,13 +23,10 @@ export const editorEvents = [
 ].reduce((r, k) => r.set(k, Symbol(k)), new Map());
 
 export const editorHooks = {
-    BEFORE_EACH: '@BEFORE_EACH',
-    AFTER_EACH: '@AFTER_EACH',
-
-    CREATED: '@CREATED',
-    BEFORE_MOUNT: '@BEFORE_MOUNT',
-    MOUNTED: '@MOUNTED',
-    UPDATED: '@UPDATED'
+    CREATED: Symbol('created'),
+    BEFORE_MOUNT: Symbol('before mount'),
+    MOUNTED: Symbol('mounted'),
+    UPDATED: Symbol('updated')
 };
 
 export const keyCodes = {
