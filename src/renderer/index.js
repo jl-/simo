@@ -1,20 +1,40 @@
+import Format from './format';
 import * as actions from '../meta/actions';
 import { lastOf } from '../utils/logic';
 import { VOID_CHAR } from '../meta/node';
-import { mergeRules } from './options';
-import { h, getKey, keyAttrs, sibling, edgeText } from '../utils/dom';
+import { mergeFormats } from './options';
+import { getKey, sibling, edgeText } from '../utils/dom';
 
 export default class Renderer {
-    constructor ($el, options = {}) {
-        this.$el = $el;
-        this.nodes = Object.create(null);
-        this.rules = mergeRules(options.rules);
+    constructor (view, options = {}, editor) {
+        this.view = view;
+        this.editor = editor;
+        this.options = options;
+        this.formats = Object.create(null);
+
+        const formats = mergeFormats(options.formats);
+        for (const name of Object.keys(formats)) {
+            this.addFormat(name, formats[name]);
+        }
+    }
+
+    supports (format) {
+        return Boolean(this.formats[format]);
+    }
+
+    addFormat (name, options) {
+        if (name && options) {
+            const { Ctor, ...opts } = options;
+            this.formats[name] = typeof Ctor === 'function' ?
+                new Ctor(this, opts) : new Format(this, options);
+        }
     }
 
     render (state, change) {
         if (!change) {
             for (const node of state.nodes) {
-                this.$el.appendChild(this.renderNode(node));
+                const $node = this.renderNode(node);
+                if ($node) this.view.appendChild($node);
             }
         } else {
             for (const operation of change.operations) {
@@ -26,55 +46,19 @@ export default class Renderer {
         }
     }
 
-    renderNode (node, deep = true) {
-        const rules = this.rules;
-        const attrs = keyAttrs(node.key, node.data);
-        if (typeof rules[node.type] === 'function') {
-            return rules[node.type](node, attrs, this);
-        }
-
-        const $node = h(rules[node.type] || node.type, attrs);
-        if (!node.nodes || !node.nodes.length) {
-            const $leaf = Array.isArray(node.formats) ?
-                node.formats.reduce(($parent, child) => {
-                    return $parent.appendChild(h(rules[child] || child));
-                }, $node) : $node;
-
-            if (node.text) {
-                $leaf.textContent = node.text;
-            }
-        } else if (deep) {
-            for (const child of node.nodes) {
-                $node.appendChild(this.renderNode(child));
-            }
-        }
-
-        return $node;
-    }
-
-    removeNode (node) {
-        const instance = this.nodes[`$${node.key}`];
-        if (instance) {
-            delete this.nodes[`$${node.key}`];
-            if (typeof instance.destroy === 'function') {
-                instance.destroy(this);
-            }
-        }
-
-        const el = this.$nodeOf(node.key);
-        if (el && el.parentElement) {
-            el.parentElement.removeChild(el);
-        }
+    renderNode (node, mode) {
+        const format = this.formats[node.type || node];
+        return format ? format.render(node, mode) : null;
     }
 
     $nodeOf (key) {
-        return this.$el.querySelector(`[data-key='${key}']`);
+        return this.view.querySelector(`[data-key='${key}']`);
     }
 
     mapSelection ({ native }) {
         const mapPoint = (node, offset) => {
             const keys = [];
-            while (node && node !== this.$el) {
+            while (node && node !== this.view) {
                 const key = getKey(node);
                 if (key) keys.unshift(key);
                 node = node.parentElement;
