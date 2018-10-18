@@ -6,18 +6,22 @@ export function h (tag, attrs, text) {
     if (text) {
         el.textContent = text;
     }
-    if (attrs) {
-        for (const name of Object.keys(attrs)) {
-            el.setAttribute(name, attrs[name]);
-        }
-    }
 
-    return el;
+    return setAttrs(el, attrs);
 }
 
 export function getAttr (el, attr) {
     return el && typeof el.getAttribute === 'function' ?
         el.getAttribute(attr) : null;
+}
+
+export function setAttrs (el, attrs) {
+    if (attrs) {
+        for (const name of Object.keys(attrs)) {
+            el.setAttribute(name, attrs[name]);
+        }
+    }
+    return el;
 }
 
 export function keyAttrs (key, attrs, name = KEY_ATTR) {
