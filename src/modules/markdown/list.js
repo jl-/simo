@@ -13,8 +13,7 @@ export function handleInput (change, meta, editor) {
     const text = meta.node.text.length > meta.offset ? '' : VOID_CHAR;
     change[actions.REPLACE_TEXT]({ keys: meta.keys, offset: 0 }, text, meta.offset);
 
-    // 2. delegate to formatter for applying the list operation.
-    const type = `${/^- /.test(meta.node.text) ? 'un' : ''}ordered-list`;
-    editor.formatter.toggle('list', change, at, type);
+    // 2. delegate to schema for instructing the list operation.
+    editor.schema.instruct('list', change, at, /^1\. /.test(meta.node.text));
     return true;
 }
