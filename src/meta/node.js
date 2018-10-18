@@ -24,6 +24,10 @@ export const inlineTypes = [
     'text', 'link'
 ];
 
-export const schema = {
-    blockTypes, inlineTypes
+export const renderModes = {
+    TAG: Symbol('render tag'),
+    LEAF: Symbol('render leaf'),
+    SKELETON: Symbol('render skeleton'),
+    RECURSIVE: Symbol('render recursively'),
+    DECORATION: Symbol('render decoration')
 };
