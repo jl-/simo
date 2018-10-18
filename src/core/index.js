@@ -3,7 +3,6 @@ import Schema from './schema';
 import Change from './change';
 import Keyboard from './keyboard';
 import Selection from './selection';
-import Formatter from './formatter';
 import sanitizeOptions from './options';
 import { on, off } from '../utils/event';
 import { editorEvents, editorHooks } from '../meta/events';
@@ -21,11 +20,10 @@ export default class Editor {
 
         this.modules = new Map();
         this.hooks = Object.create(null);
-        this.schema = new Schema(this.options.schema);
         this.selection = new Selection();
+        this.schema = new Schema(this.options.schema);
         this.keyboard = new Keyboard(this.options.keyboard);
-        this.formatter = new Formatter(this, this.options.formats);
-        this.dispatch(editorHooks.CREATED);
+        this.invokeHooks(editorHooks.CREATED, this);
     }
 
     mount (renderer, state) {
@@ -43,14 +41,14 @@ export default class Editor {
             }
         }
 
-        this.dispatch(editorHooks.BEFORE_MOUNT);
+        this.invokeHooks(editorHooks.BEFORE_MOUNT, this);
         this.renderer.render(this.state);
-        this.dispatch(editorHooks.MOUNTED);
+        this.invokeHooks(editorHooks.MOUNTED, this);
     }
 
     module (name, Ctor, options) {
         if (typeof Ctor === 'function') {
-            this.modules.set(name, new Ctor(options, this));
+            this.modules.set(name, new Ctor(this, options));
         }
         return this.modules.get(name);
     }
@@ -58,9 +56,9 @@ export default class Editor {
     enable (value = true) {
         this.readonly = !value;
         for (const hook of editorEvents.keys()) {
-            (this.readonly ? off : on)(this.renderer.$el, hook, this);
+            (this.readonly ? off : on)(this.renderer.view, hook, this);
         }
-        this.renderer.$el.setAttribute('contenteditable', !this.readonly);
+        this.renderer.view.setAttribute('contenteditable', !this.readonly);
     }
 
     handleEvent (event) {
@@ -83,38 +81,36 @@ export default class Editor {
         return this;
     }
 
-    dispatch (name, ...payload) {
-        const has = set => set && set.size > 0;
-        if (!has(this.hooks[name])) return;
-
-        const invoke = (targets, ...params) => {
-            if (!has(targets)) return;
-            for (const target of targets) {
+    invokeHooks (name, ...params) {
+        const hooks = this.hooks[name];
+        if (hooks && hooks.size > 0) {
+            for (const target of hooks) {
                 if (typeof target === 'function') {
                     target(...params);
-                } else if (target && typeof target.hook === 'function') {
+                } else if (typeof target.hook === 'function') {
                     target.hook(...params);
                 }
             }
-        };
+        }
+    }
 
+    dispatch (name, ...params) {
+        const hooks = this.hooks[name];
+        if (!hooks || hooks.size === 0) return;
         const change = new Change(this.state, this.selection);
-        invoke(this.hooks[editorHooks.BEFORE_EACH], name, change, this, ...payload);
-        invoke(this.hooks[name], ...payload, change, this);
-        invoke(this.hooks[editorHooks.AFTER_EACH], name, change, this, ...payload);
-
+        this.invokeHooks(name, change, this, ...params);
         if (!change.pristine) this.apply(change);
     }
 
     apply (change) {
         this.state = change.state;
         this.renderer.render(this.state, change);
-        this.dispatch(editorHooks.UPDATED, change, this);
+        this.invokeHooks(editorHooks.UPDATED, change, this);
     }
 
     focus () {
         if (!this.options.readonly) {
-            this.renderer.$el.focus();
+            this.renderer.view.focus();
         }
     }
 }
