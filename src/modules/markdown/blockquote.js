@@ -14,7 +14,7 @@ export function handleInput (change, meta, editor) {
     const text = meta.node.text.length > meta.offset ? '' : VOID_CHAR;
     change[actions.REPLACE_TEXT]({ keys: meta.keys, offset: 0 }, text, meta.offset);
 
-    // 2. delegate to formatter for applying the quotation operation.
-    editor.formatter.toggle('quotation', change, at);
+    // 2. delegate to schema for instructing the blockquote operation.
+    editor.schema.instruct('blockquote', change, at);
     return true;
 }

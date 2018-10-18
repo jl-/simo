@@ -3,8 +3,7 @@ import * as heading from './heading';
 import * as blockquote from './blockquote';
 
 export const builtinFormats = {
-    // list, heading, blockquote
-    list, heading
+    list, heading, blockquote
 };
 
 export function mergeFormats (formats = {}) {
