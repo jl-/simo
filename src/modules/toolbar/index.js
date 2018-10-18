@@ -3,22 +3,22 @@ import { h } from '../../utils/dom';
 import * as Options from './options';
 
 export default class Toolbar {
-    constructor (options = {}, editor) {
+    constructor (editor, options = {}) {
         this.formats = [];
         this.editor = editor;
         this.options = Options.sanitize(options);
-        this.$el = this.options.$el || h('div', { class: 'toolbar' });
+        this.view = this.options.view || h('div', { class: 'toolbar' });
 
         for (const name of (this.options.formats || Options.formats)) {
-            const format = editor.formatter.formats.get(name);
+            const format = editor.renderer.formats[name];
             if (format && format.$control) {
                 this.formats.push(format);
-                this.$el.appendChild(format.$control);
+                this.view.appendChild(format.$control);
             }
         }
 
-        if (editor.renderer.$el.parentElement !== this.$el.parentElement) {
-            editor.renderer.$el.insertAdjacentElement('beforebegin', this.$el);
+        if (editor.renderer.view.parentElement !== this.view.parentElement) {
+            editor.renderer.view.insertAdjacentElement('beforebegin', this.view);
         }
     }
 

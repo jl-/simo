@@ -2,7 +2,7 @@ import Record from './record';
 import { editorHooks } from '../../meta/events';
 
 export default class History {
-    constructor (options, editor) {
+    constructor (editor, options) {
         this.stack = [];
         editor.hook(editorHooks.UPDATED, ::this.update);
     }
