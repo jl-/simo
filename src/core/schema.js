@@ -2,8 +2,13 @@ import { VOID_CHAR } from '../meta/node';
 
 export default class Schema {
     constructor (options = {}) {
+        this.formats = options.formats;
         this.blockTypes = options.blockTypes;
         this.inlineTypes = options.inlineTypes;
+    }
+
+    supports (format) {
+        return Boolean(this.formats[format]);
     }
 
     isBlock (node) {
@@ -30,6 +35,14 @@ export default class Schema {
         if (this.isInline(meta.node)) return !meta.isSolo;
         if (this.isBlock(meta.node)) return true;
         return !meta.parent;
+    }
+
+    instruct (name, ...params) {
+        const format = this.formats[name];
+        if (format && typeof format.instruct === 'function') {
+            return format.instruct(...params);
+        }
+        return null;
     }
 
     normalize (nodes) {
