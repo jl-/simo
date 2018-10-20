@@ -7,8 +7,12 @@ export default class Schema {
         this.inlineTypes = options.inlineTypes;
     }
 
+    of (format) {
+        return this.formats[format];
+    }
+
     supports (format) {
-        return Boolean(this.formats[format]);
+        return Boolean(this.of(format));
     }
 
     isBlock (node) {
@@ -37,12 +41,20 @@ export default class Schema {
         return !meta.parent;
     }
 
-    instruct (name, ...params) {
-        const format = this.formats[name];
-        if (format && typeof format.instruct === 'function') {
-            return format.instruct(...params);
+    pipe (name, action, ...params) {
+        const format = this.of(name);
+        if (format && typeof format[action] === 'function') {
+            return format[action](...params);
         }
         return null;
+    }
+
+    format (name, ...params) {
+        return this.pipe(name, 'format', ...params);
+    }
+
+    create (format, ...params) {
+        return this.pipe(format, 'create', ...params);
     }
 
     normalize (nodes) {
