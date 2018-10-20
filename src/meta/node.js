@@ -16,8 +16,8 @@ export const positions = {
 };
 
 export const blockTypes = [
-    'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'header',
-    'div', 'p', 'ul', 'ol', 'li', 'block', 'paragraph',
+    'heading', 'header', 'list',
+    'div', 'p', 'li', 'block', 'paragraph',
     'blockquote', 'section'
 ];
 
