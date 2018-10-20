@@ -46,9 +46,9 @@ export default class Renderer {
         }
     }
 
-    renderNode (node, mode) {
+    renderNode (node, mode, context) {
         const format = this.formats[node.type || node];
-        return format ? format.render(node, mode) : null;
+        return format ? format.render(node, mode, context) : null;
     }
 
     $nodeOf (key) {
@@ -77,7 +77,7 @@ export default class Renderer {
             const offset = point.offset < 0 ? Infinity : point.offset;
             return { node, offset: Math.min(offset, node.textContent.length) };
         };
-        selection.select(mapPoint(selection.anchor), mapPoint(selection.focus));
+        selection.select(mapPoint(selection.start), mapPoint(selection.end));
     }
 
     [actions.INSERT_NODES] ({ data, meta }) {
