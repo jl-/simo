@@ -61,7 +61,7 @@ export function lineFeedLeaf (change, focus, selection) {
         const isFirst = nodes[0] === focus.block[0];
         if (isFirst || lastOf(nodes) === focus.block[0]) {
             const at = focus.keys.slice(0, focus.blocks.length - 1);
-            hyperkit.insertNormalBlock(change, at, !isFirst);
+            change.state.schema.of('block').insert(change, at, !isFirst);
             return change[actions.REMOVE_NODES](selection.anchor, selection.focus, isFirst);
         }
 
@@ -75,7 +75,7 @@ export function lineFeedLeaf (change, focus, selection) {
             nodes: focus.nodes.slice(1 - focus.blocks.length),
             offset: nodes.indexOf(focus.block[0])
         });
-        hyperkit.insertNormalBlock(change, op.focus.keys, false);
+        change.state.schema.of('block').insert(change, op.focus.keys, false);
         change[actions.REMOVE_NODES](selection.focus, selection.focus, true);
         return;
     }

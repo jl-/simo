@@ -1,5 +1,4 @@
 import * as actions from '../meta/actions';
-import * as hyperkit from '../core/hyperkit';
 
 export function format (change, at) {
     const target = change.state.find(at).clone(false);
@@ -11,7 +10,7 @@ export function lineFeedLeaf (change, focus, selection) {
     const { keys, blocks } = focus;
     const at = keys.slice(0, blocks.length);
     if (change.state.schema.isEmpty(blocks[0])) {
-        return hyperkit.castToNormalBlock(change, at, blocks[0]);
+        return change.state.schema.of('block').cast(change, at);
     }
 
     change[actions.EXTEND_NODE](at, blocks[0], 'block');
@@ -21,5 +20,5 @@ export function lineFeedLeaf (change, focus, selection) {
 export function backwardsBlock (change, focus) {
     const { keys, blocks } = focus;
     const at = keys.slice(0, blocks.length);
-    return hyperkit.castToNormalBlock(change, at, blocks[0]);
+    return change.state.schema.of('block').cast(change, at);
 }

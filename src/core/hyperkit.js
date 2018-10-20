@@ -1,21 +1,8 @@
-import Node from '../models/node';
 import { VOID_CHAR } from '../meta/node';
 import * as actions from '../meta/actions';
 
-export function castToNormalBlock (change, at, node) {
-    const target = node.clone(false);
-    target.type = 'block';
-    change[actions.REPLACE_NODES]({ at, data: [target] });
-}
-
 export function removeNodeAtPoint (change, point, isBackwards) {
     change[actions.REMOVE_NODES](point, point, isBackwards);
-}
-
-export function insertNormalBlock (change, at, after) {
-    const nodes = [{ type: 'text' }];
-    const block = new Node({ type: 'block', nodes });
-    change[actions.INSERT_NODES]({ at, data: [block], after });
 }
 
 export function removeSelection (change, selection) {
