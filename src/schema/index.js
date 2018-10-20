@@ -1,10 +1,11 @@
 import * as list from './list';
+import * as indent from './indent';
 import * as heading from './heading';
 import * as blockquote from './blockquote';
 import { blockTypes, inlineTypes } from '../meta/node';
 
 export const builtinFormats = {
-    list, heading, blockquote
+    list, indent, heading, blockquote
 };
 
 export function sanitizeSchema (schema = {}) {

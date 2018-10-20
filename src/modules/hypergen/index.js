@@ -1,25 +1,11 @@
 import Module from '../base';
-import * as List from './list';
-import * as Heading from './heading';
-import * as Quotation from './quotation';
 import * as actions from '../../meta/actions';
 import * as hyperkit from '../../core/hyperkit';
-import { VOID_CHAR } from '../../meta/node';
+import { VOID_CHAR, TAB_CHAR } from '../../meta/node';
 import { editorEvents, keyCodes } from '../../meta/events';
 import { isEdgeBranch, adjacentLeafOf, adjacentPoint } from '../../utils/node';
 
 export default class Hypergen extends Module {
-    [editorEvents.get('keydown')] (change, event, editor) {
-        switch (event.keyCode) {
-            case keyCodes.ENTER:
-                return this.onEnterKeydown(change, event, editor);
-            case keyCodes.DELETE:
-                event.preventDefault();
-                return this.deleteBackwards(change, change.selection);
-        }
-        return false;
-    }
-
     [editorEvents.get('beforeinput')] (change, event) {
         if (!event.isComposing && !change.selection.isCollapsed) {
             hyperkit.removeSelection(change, change.selection);
@@ -34,7 +20,20 @@ export default class Hypergen extends Module {
         }, event.data, selection.focus.offset - selection.anchor.offset);
     }
 
-    onEnterKeydown (change, event) {
+    [editorEvents.get('keydown')] (change, event, editor) {
+        switch (event.keyCode) {
+            case keyCodes.ENTER:
+                return this.onEnterKeydown(change, event, editor);
+            case keyCodes.TAB:
+                return this.onTabKeydown(change, event, editor);
+            case keyCodes.DELETE:
+                event.preventDefault();
+                return this.deleteBackwards(change, change.selection, editor);
+        }
+        return false;
+    }
+
+    onEnterKeydown (change, event, editor) {
         event.preventDefault();
         const selection = change.selection;
 
@@ -46,15 +45,15 @@ export default class Hypergen extends Module {
         const focus = selection.focus;
 
         // 2. if current block is li|h1~h6|blockquote,
-        // treat as linefeeding. and respect their rules
+        // treat as linefeeding, process in their own manner
         if (focus.blocks[0].type === 'li') {
-            return List.lineFeedLeaf(change, focus, selection);
+            return editor.schema.of('list').lineFeedLeaf(change, focus, selection);
         }
         if (/^h[1-6]$/.test(focus.blocks[0].type)) {
-            return Heading.lineFeedLeaf(change, focus, selection);
+            return editor.schema.of('heading').lineFeedLeaf(change, focus, selection);
         }
         if (focus.blocks[0].type === 'blockquote') {
-            return Quotation.lineFeedLeaf(change, focus, selection);
+            return editor.schema.of('blockquote').lineFeedLeaf(change, focus, selection);
         }
 
         // 3. TODO
@@ -63,7 +62,29 @@ export default class Hypergen extends Module {
         return change[actions.SPLIT_NODE](focus, 1), false;
     }
 
-    deleteBackwards (change, selection) {
+    onTabKeydown (change, event, editor) {
+        event.preventDefault();
+
+        const selection = change.selection;
+        // 1. if selection is not empty, increase indent of all the root sibling blocks
+        if (!selection.isCollapsed) {
+            return editor.schema.format('indent', change, selection.start, selection.end, 1);
+        }
+
+        const focus = selection.focus;
+        // 2. if cursor is at the front of current block and current block is a list-item
+        if (focus.block[0].type === 'li' && isEdgeBranch(focus.block) && (
+            focus.offset === 0 || focus.nodes[0].text === VOID_CHAR)) {
+            return editor.schema.of('list').indent(change, focus, editor);
+        }
+
+        // 3. otherwise if the leaf node is not empty and not frozen, then insert a tab char at the cursor
+        if (!editor.schema.isEmpty(focus.nodes[0]) && !editor.schema.isFrozen(focus.nodes[0])) {
+            change[actions.REPLACE_TEXT](selection.focus, TAB_CHAR);
+        }
+    }
+
+    deleteBackwards (change, selection, editor) {
         // 1. remove selection if not collapsed
         if (!selection.isCollapsed) {
             return hyperkit.removeSelection(change, selection);
@@ -121,19 +142,19 @@ export default class Hypergen extends Module {
             const n = nodes.slice(0).reverse();
             const point = adjacentPoint(change.state, n, false);
             selection.digest(change.state, point, point);
-            return this.deleteBackwards(change, selection);
+            return this.deleteBackwards(change, selection, editor);
         }
 
         // 5.2 if focus is at the front of li|heading|blockquote,
         // treat as block-wide backwards, in their own rules.
         if (offset === 0 && blocks[0].type === 'li') {
-            return List.backwardsBlock(change, selection.focus);
+            return editor.schema.of('list').backwardsBlock(change, selection.focus);
         }
         if (offset === 0 && /^h[1-6]$/.test(blocks[0].type)) {
-            return Heading.backwardsBlock(change, selection.focus);
+            return editor.schema.of('heading').backwardsBlock(change, selection.focus);
         }
         if (offset === 0 && blocks[0].type === 'blockquote') {
-            return Quotation.backwardsBlock(change, selection.focus);
+            return editor.schema.of('blockquote').backwardsBlock(change, selection.focus);
         }
 
         // TODO
