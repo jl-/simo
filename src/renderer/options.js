@@ -1,6 +1,7 @@
 import bold from './bold';
 import italic from './italic';
 import link from './link';
+import indent from './indent';
 import list from './list';
 import heading from './heading';
 import blockquote from './blockquote';
@@ -11,7 +12,7 @@ export const defaultFormats = {
     node: 'span',
     paragraph: 'p',
     li: 'li',
-    bold, italic, link,
+    bold, italic, link, indent,
     list, heading, blockquote
 };
 
