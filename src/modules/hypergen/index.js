@@ -49,7 +49,7 @@ export default class Hypergen extends Module {
         if (focus.blocks[0].type === 'li') {
             return editor.schema.of('list').lineFeedLeaf(change, focus, selection);
         }
-        if (/^h[1-6]$/.test(focus.blocks[0].type)) {
+        if (focus.blocks[0].type === 'heading') {
             return editor.schema.of('heading').lineFeedLeaf(change, focus, selection);
         }
         if (focus.blocks[0].type === 'blockquote') {
