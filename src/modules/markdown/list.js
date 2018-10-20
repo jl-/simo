@@ -14,6 +14,6 @@ export function handleInput (change, meta, editor) {
     change[actions.REPLACE_TEXT]({ keys: meta.keys, offset: 0 }, text, meta.offset);
 
     // 2. delegate to schema for instructing the list operation.
-    editor.schema.instruct('list', change, at, /^1\. /.test(meta.node.text));
+    editor.schema.format('list', change, at, /^1\. /.test(meta.node.text));
     return true;
 }

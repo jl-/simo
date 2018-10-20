@@ -15,7 +15,7 @@ export function handleInput (change, meta, editor) {
     change[actions.REPLACE_TEXT]({ keys: meta.keys, offset: 0 }, text, meta.offset);
 
     // 2. delegate to schema for instructing the heading operation.
-    editor.schema.instruct('heading', change, at, meta.offset - 1);
+    editor.schema.format('heading', change, at, meta.offset - 1);
 
     return true;
 }

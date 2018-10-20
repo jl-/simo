@@ -15,6 +15,6 @@ export function handleInput (change, meta, editor) {
     change[actions.REPLACE_TEXT]({ keys: meta.keys, offset: 0 }, text, meta.offset);
 
     // 2. delegate to schema for instructing the blockquote operation.
-    editor.schema.instruct('blockquote', change, at);
+    editor.schema.format('blockquote', change, at);
     return true;
 }
