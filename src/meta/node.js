@@ -1,4 +1,5 @@
 export const SPACE = ' ';
+export const TAB_CHAR = '    ';
 export const VOID_CHAR = '\u200B';
 
 export const KEY_ATTR = 'data-key';
