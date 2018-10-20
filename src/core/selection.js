@@ -95,6 +95,10 @@ export default class Selection {
         }
     }
 
+    [actions.SELECT] ({ anchor, focus }) {
+        return { anchor, focus };
+    }
+
     [actions.REPLACE_TEXT] ({ focus }) {
         const index = focus.keys.length - 1;
         if (this.focus.keys[index] === focus.keys[index]) {
