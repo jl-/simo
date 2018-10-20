@@ -16,3 +16,4 @@ export const REMOVE_SELECTION = Symbol('remove selection');
 
 export const UI = Symbol('ui');
 export const STATE = Symbol('state');
+export const SELECT = Symbol('select');
