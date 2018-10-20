@@ -26,6 +26,12 @@ export default class Change {
         return operation;
     }
 
+    [actions.SELECT] (anchor, focus) {
+        return this.commit(new Operation({
+            type: actions.SELECT, anchor, focus
+        }));
+    }
+
     [actions.REPLACE_TEXT] ({ keys, offset }, data, length = 0) {
         const from = this.state.find(keys);
         return this.commit(new Operation({
