@@ -10,4 +10,8 @@ export default class Keyboard {
     matchHotkey (event) {
         return false;
     }
+
+    willProduceChar (event) {
+        return event.type === 'keydown' && !event.isComposing && event.key.length === 1;
+    }
 }
