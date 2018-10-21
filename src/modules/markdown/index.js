@@ -1,6 +1,5 @@
 import Module from '../base';
 import { mergeFormats } from './options';
-import { edgeLeafOf } from '../../utils/node';
 import { editorEvents, editorHooks } from '../../meta/events';
 
 export default class Markdown extends Module {
@@ -19,13 +18,10 @@ export default class Markdown extends Module {
     }
 
     [editorEvents.get('input')] (change, event, editor) {
-        const focus = change.selection.focus;
-        const first = edgeLeafOf(focus.blocks[0], { tail: false });
-        const meta = { ...focus, first, node: focus.nodes[0] };
-
+        if (event.isComposing) return;
         for (const format of this.formats.values()) {
             if (typeof format.handleInput === 'function' &&
-                format.handleInput(change, meta, editor, event)) break;
+                format.handleInput(change, editor, event)) break;
         }
     }
 }
