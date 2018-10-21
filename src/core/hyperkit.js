@@ -15,7 +15,7 @@ export function removeSelection (change, selection) {
         const fpoint = fop ? fop[isBackwards ? 'focus' : 'anchor'] : focus;
         const apoint = aop ? aop[isBackwards ? 'anchor' : 'focus'] : anchor;
         change[actions.REMOVE_NODES](apoint, fpoint, isBackwards);
-    } else {
+    } else if (!change.state.schema.isFrozen(focus.nodes[0])) {
         const point = isBackwards ? focus : anchor;
         const length = Math.abs(anchor.offset - focus.offset);
         const text = selection.contains(point.keys) ? VOID_CHAR : '';
