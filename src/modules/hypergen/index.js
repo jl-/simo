@@ -7,12 +7,18 @@ import { isEdgeBranch, adjacentLeafOf, adjacentPoint } from '../../utils/node';
 
 export default class Hypergen extends Module {
     [editorEvents.get('beforeinput')] (change, event) {
-        if (!event.isComposing && !change.selection.isCollapsed) {
+        if (!change.selection.isCollapsed) {
             hyperkit.removeSelection(change, change.selection);
         }
     }
 
     [editorEvents.get('input')] (change, event) {
+        if (!event.isComposing) {
+            this[editorEvents.get('compositionend')](change, event);
+        }
+    }
+
+    [editorEvents.get('compositionend')] (change, event) {
         const selection = change.selection;
         change[actions.REPLACE_TEXT]({
             keys: selection.focus.keys,
@@ -29,6 +35,13 @@ export default class Hypergen extends Module {
             case keyCodes.DELETE:
                 event.preventDefault();
                 return this.deleteBackwards(change, change.selection, editor);
+            default:
+                // prevent insert a char at a frozen node.
+                if (editor.keyboard.willProduceChar(event) &&
+                    change.selection.isCollapsed &&
+                    editor.schema.isFrozen(change.selection.focus.nodes[0])) {
+                    event.preventDefault();
+                }
         }
         return false;
     }
