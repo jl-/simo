@@ -71,7 +71,7 @@ export default class State {
             positions.AFTER : positions.BEFORE;
     }
 
-    [actions.REPLACE_TEXT] (data, { at, offset, length }, operation) {
+    [actions.REPLACE_TEXT] (data, { at, offset, length }) {
         const node = this.stashNode(at);
         const text = node.text.replace(VOID_CHAR, '');
         node.text = text.slice(0, offset) + data + text.slice(offset + length);
