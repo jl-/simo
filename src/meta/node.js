@@ -1,12 +1,14 @@
 export const SPACE = ' ';
 export const TAB_CHAR = '    ';
 export const VOID_CHAR = '\u200B';
+export const LINEFEED_CHAR = '\n';
 
 export const KEY_ATTR = 'data-key';
 
 export const nodeTypes = {
     TEXT: 3,
-    ELEMENT: 1
+    ELEMENT: 1,
+    COMMENT: 8
 };
 
 export const positions = {
@@ -16,7 +18,7 @@ export const positions = {
 };
 
 export const blockTypes = [
-    'heading', 'header', 'list',
+    'heading', 'header', 'list', 'pre',
     'div', 'p', 'li', 'block', 'paragraph',
     'blockquote', 'section'
 ];
