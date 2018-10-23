@@ -1,5 +1,13 @@
 import { KEY_ATTR, nodeTypes } from '../meta/node';
 
+export function $ (root, selector) {
+    return root.querySelector(selector);
+}
+
+export function $$ (root, selector) {
+    return root.querySelectorAll(selector);
+}
+
 export function h (tag, attrs, text) {
     const el = document.createElement(tag);
 
@@ -46,6 +54,6 @@ export function edgeText (node, tail = false) {
 
 export function sibling (node, after = true, filter = getKey) {
     const next = () => after ? node.nextSibling : node.previousSibling;
-    while ((node = next()), node && !filter(node));
+    while ((node = next()), node && (filter && !filter(node)));
     return node;
 }
