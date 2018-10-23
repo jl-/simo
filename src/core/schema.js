@@ -16,11 +16,12 @@ export default class Schema {
     }
 
     isBlock (node) {
-        return this.blockTypes.indexOf(node.type) !== -1;
+        return !this.isInline(node);
     }
 
     isInline (node) {
-        return this.inlineTypes.indexOf(node.type) !== -1;
+        return node.meta && typeof node.meta.inline === 'boolean' ?
+            node.meta.inline : this.inlineTypes.indexOf(node.type) !== -1;
     }
 
     isEmpty (node) {
