@@ -166,9 +166,8 @@ export default class Renderer {
 
     [actions.REPLACE_TEXT] (operation) {
         const { data, from, meta } = operation;
-        const node = this.editor.state.find(meta.at);
-        if (!this.matchOperation(operation, node)) {
-            const point = this.$pointOf(node, meta.offset);
+        if (!this.matchOperation(operation, from)) {
+            const point = this.$pointOf(from, meta.offset);
             const text = from.text === VOID_CHAR ? '' : from.text;
             point.node.textContent = text.slice(0, point.offset) + data
                 + text.slice(point.offset + meta.length) || VOID_CHAR;
