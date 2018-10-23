@@ -1,4 +1,4 @@
-# Simo
+# [Simo](https://jl-.github.io/simo/)
 
 <!-- Badges -->
 ![licence](https://badgen.net/badge/licence/MIT/blue)
