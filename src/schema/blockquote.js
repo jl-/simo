@@ -1,3 +1,4 @@
+import { lastOf } from '../utils/logic';
 import * as actions from '../meta/actions';
 
 export function format (change, at) {
@@ -21,4 +22,15 @@ export function backwardsBlock (change, focus) {
     const { keys, blocks } = focus;
     const at = keys.slice(0, blocks.length);
     return change.state.schema.of('block').cast(change, at);
+}
+
+export function lineFeedChild (change, focus) {
+    if (!change.state.schema.isEmpty(focus.block[0]) ||
+        focus.blocks[0] !== lastOf(focus.blocks[1].nodes)) {
+        change[actions.SPLIT_NODE](focus, 1);
+    } else {
+        const at = focus.keys.slice(0, focus.blocks.length - 1);
+        change.state.schema.of('block').insert(change, at, true);
+        change[actions.REMOVE_NODES](focus, focus, false), false;
+    }
 }

@@ -1,3 +1,4 @@
+import * as li from './li';
 import * as list from './list';
 import * as code from './code';
 import * as block from './block';
@@ -7,7 +8,7 @@ import * as blockquote from './blockquote';
 import { blockTypes, inlineTypes } from '../meta/node';
 
 export const builtinFormats = {
-    list, code, block, indent, heading, blockquote
+    li, list, code, block, indent, heading, blockquote
 };
 
 export function sanitizeSchema (schema = {}) {
