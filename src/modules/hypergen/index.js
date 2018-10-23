@@ -57,7 +57,7 @@ export default class Hypergen extends Module {
 
         const focus = selection.focus;
 
-        // 2. if current block is li|h1~h6|blockquote,
+        // 2. if current block is li|h1~h6|blockquote|code,
         // treat as linefeeding, process in their own manner
         if (focus.blocks[0].type === 'li') {
             return editor.schema.of('list').lineFeedLeaf(change, focus, selection);
@@ -67,6 +67,9 @@ export default class Hypergen extends Module {
         }
         if (focus.blocks[0].type === 'blockquote') {
             return editor.schema.of('blockquote').lineFeedLeaf(change, focus, selection);
+        }
+        if (focus.blocks[0].type === 'code') {
+            return editor.schema.of('code').lineFeedLeaf(change, focus, selection);
         }
 
         // 3. TODO
