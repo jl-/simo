@@ -5,7 +5,7 @@ export const Options = {
 
 export class Heading extends Format {
     tag (node) {
-        return `h${node.data && node.data.level || '1'}`;
+        return `h${node.meta && node.meta.level || '1'}`;
     }
 }
 
