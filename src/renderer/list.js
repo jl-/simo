@@ -5,7 +5,7 @@ export const Options = {
 
 export class List extends Format {
     tag (node) {
-        return node.meta.ordered ? 'ol' : 'ul';
+        return node.meta && node.meta.ordered ? 'ol' : 'ul';
     }
 }
 
