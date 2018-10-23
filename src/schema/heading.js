@@ -1,5 +1,4 @@
 import * as actions from '../meta/actions';
-import * as hyperkit from '../core/hyperkit';
 import { edgeLeafOf } from '../utils/node';
 
 
@@ -12,12 +11,12 @@ export function format (change, at, level) {
 
     const target = block.clone(false);
     if (target.type === 'heading' &&
-        target.data && target.data.level === 'level') {
+        target.meta && target.meta.level === level) {
         target.type = 'block';
-        delete target.data.level;
+        delete target.meta.level;
     } else {
         target.type = 'heading';
-        (target.data || (target.data = {})).level = level;
+        (target.meta || (target.meta = {})).level = level;
     }
 
     return change[actions.REPLACE_NODES]({ at, data: [target] });
