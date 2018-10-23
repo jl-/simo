@@ -1,8 +1,26 @@
 .simo {
     white-space: pre;
+    line-height: 1.5;
+    h1, h2 {
+        padding-bottom: .3em;
+        border-bottom: 1px solid #eaecef;
+    }
     blockquote {
         margin-left: 0;
         padding-left: 1em;
         border-left: 3px solid #f2f2f2;
+    }
+    li + li {
+        margin-top: .25em;
+    }
+    code {
+        margin: 0;
+        padding: 0.2em 0.4em;
+        font-size: 85%;
+        border-radius: 3px;
+        background-color: rgba(27,31,35,0.05);
+    }
+    pre > code {
+        display: block;
     }
 }
