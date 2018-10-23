@@ -57,24 +57,19 @@ export default class Hypergen extends Module {
 
         const focus = selection.focus;
 
-        // 2. if current block is li|h1~h6|blockquote|code,
-        // treat as linefeeding, process in their own manner
-        if (focus.blocks[0].type === 'li') {
-            return editor.schema.of('list').lineFeedLeaf(change, focus, selection);
-        }
-        if (focus.blocks[0].type === 'heading') {
-            return editor.schema.of('heading').lineFeedLeaf(change, focus, selection);
-        }
-        if (focus.blocks[0].type === 'blockquote') {
-            return editor.schema.of('blockquote').lineFeedLeaf(change, focus, selection);
-        }
-        if (focus.blocks[0].type === 'code') {
-            return editor.schema.of('code').lineFeedLeaf(change, focus, selection);
+        // 2. if current block has a linefeed formatter
+        let format = editor.schema.of(focus.blocks[0].type);
+        if (format && typeof format.lineFeedLeaf === 'function') {
+            return format.lineFeedLeaf(change, focus, selection);
         }
 
-        // 3. TODO
+        // 2. if parent block has a child linefeed formatter
+        format = focus.blocks[1] && editor.schema.of(focus.blocks[1].type);
+        if (format && typeof format.lineFeedChild === 'function') {
+            return format.lineFeedChild(change, focus, selection);
+        }
 
-        // last. treat as normal linefeeding, as splitting the focus node.
+        // otherwise. treat as normal linefeed: split at focus point.
         return change[actions.SPLIT_NODE](focus, 1), false;
     }
 
@@ -91,7 +86,7 @@ export default class Hypergen extends Module {
         // 2. if cursor is at the front of current block and current block is a list-item
         if (focus.block[0].type === 'li' && isEdgeBranch(focus.block) && (
             focus.offset === 0 || focus.nodes[0].text === VOID_CHAR)) {
-            return editor.schema.of('list').indent(change, focus, editor);
+            return editor.schema.of('li').indent(change, focus, editor);
         }
 
         // 3. otherwise if the leaf node is not empty and not frozen, then insert a tab char at the cursor
@@ -164,7 +159,7 @@ export default class Hypergen extends Module {
         // 5.2 if focus is at the front of li|heading|blockquote,
         // treat as block-wide backwards, in their own rules.
         if (offset === 0 && blocks[0].type === 'li') {
-            return editor.schema.of('list').backwardsBlock(change, selection.focus);
+            return editor.schema.of('li').backwardsBlock(change, selection.focus);
         }
         if (offset === 0 && /^h[1-6]$/.test(blocks[0].type)) {
             return editor.schema.of('heading').backwardsBlock(change, selection.focus);
