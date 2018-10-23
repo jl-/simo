@@ -18,8 +18,12 @@ export default class Renderer {
         }
     }
 
+    of (format) {
+        return this.formats[format];
+    }
+
     supports (format) {
-        return Boolean(this.formats[format]);
+        return Boolean(this.of(format));
     }
 
     addFormat (name, options) {
@@ -51,33 +55,65 @@ export default class Renderer {
         return format ? format.render(node, mode, context) : null;
     }
 
+    removeNode ($node) {
+        console.log(getKey($node));
+        $node.parentElement.removeChild($node);
+    }
+
     $nodeOf (key) {
         return this.view.querySelector(`[data-key='${key}']`);
     }
 
-    mapSelection ({ native }) {
-        const mapPoint = (node, offset) => {
-            const keys = [];
-            while (node && node !== this.view) {
-                const key = getKey(node);
-                if (key) keys.unshift(key);
-                node = node.parentElement;
-            }
-            return { keys, offset };
-        };
+    pointOf ($node, offset) {
+        let $n = $node, keys = [];
+        while ($n && $n !== this.view) {
+            const key = getKey($n);
+            if (key) keys.unshift(key);
+            $n = $n.parentElement;
+        }
+        const node = this.editor.state.find(keys);
+        const format = node && this.of(node.type);
+        if (format && typeof format.pointOf === 'function') {
+            offset = format.pointOf($node, offset, node).offset;
+        }
+        return { keys, offset };
+    }
+
+    $pointOf (node, offset) {
+        const format = this.of(node.type);
+        const $node = this.$nodeOf(node.key);
+        if (format && typeof format.$pointOf === 'function') {
+            return format.$pointOf(node, offset, $node);
+        }
+
+        node = edgeText($node);
+        offset = offset < 0 ? Infinity : offset;
+        return { node, offset: Math.min(offset, node.textContent.length) };
+    }
+
+    mapSelection (selection) {
+        const native = selection.native;
         return {
-            focus:  mapPoint(native.focusNode, native.focusOffset),
-            anchor: mapPoint(native.anchorNode, native.anchorOffset)
+            focus: this.pointOf(native.focusNode, native.focusOffset),
+            anchor: this.pointOf(native.anchorNode, native.anchorOffset)
         };
     }
 
     setSelection (selection) {
-        const mapPoint = point => {
-            const node = edgeText(this.$nodeOf(lastOf(point.keys)));
-            const offset = point.offset < 0 ? Infinity : point.offset;
-            return { node, offset: Math.min(offset, node.textContent.length) };
-        };
-        selection.select(mapPoint(selection.start), mapPoint(selection.end));
+        const { start, end } = selection;
+        selection.select(
+            this.$pointOf(start.nodes[0], start.offset),
+            this.$pointOf(end.nodes[0], end.offset)
+        );
+    }
+
+    matchOperation (operation, node) {
+        const format = this.of(node.type);
+        if (format && typeof format[operation.type] === 'function') {
+            format[operation.type](operation, node);
+            return true;
+        }
+        return false;
     }
 
     [actions.INSERT_NODES] ({ data, meta }) {
@@ -95,11 +131,11 @@ export default class Renderer {
         }
 
         for (let count = 1; count < meta.length; count++) {
-            $node.parentElement.removeChild(sibling($node));
+            this.removeNode(sibling($node));
         }
 
         if (meta.length > 0) {
-            $node.parentElement.removeChild($node);
+            this.removeNode($node);
         }
     }
 
@@ -108,16 +144,16 @@ export default class Renderer {
         const end = this.$nodeOf(data.focus);
         while (node && node !== end) {
             const next = sibling(node, !isBackwards);
-            node.parentElement.removeChild(node);
+            this.removeNode(node);
             node = next;
         }
-        node.parentElement.removeChild(node);
+        this.removeNode(node);
     }
 
     [actions.EXTEND_NODE] ({ data, meta }) {
         const root = this.$nodeOf(lastOf(meta.at));
-        for (const el of [...root.children]) {
-            root.removeChild(el);
+        for (const $node of [...root.children]) {
+            this.removeNode($node);
         }
         root.appendChild(this.renderNode(data[0]));
     }
@@ -128,10 +164,14 @@ export default class Renderer {
         orig.parentElement.replaceChild(node, orig);
     }
 
-    [actions.REPLACE_TEXT] ({ data, from, meta }) {
-        const $node = edgeText(this.$nodeOf(lastOf(meta.at)));
-        const text = from.text === VOID_CHAR ? '' : from.text;
-        $node.textContent = text.slice(0, meta.offset) + data
-            + text.slice(meta.offset + meta.length) || VOID_CHAR;
+    [actions.REPLACE_TEXT] (operation) {
+        const { data, from, meta } = operation;
+        const node = this.editor.state.find(meta.at);
+        if (!this.matchOperation(operation, node)) {
+            const point = this.$pointOf(node, meta.offset);
+            const text = from.text === VOID_CHAR ? '' : from.text;
+            point.node.textContent = text.slice(0, point.offset) + data
+                + text.slice(point.offset + meta.length) || VOID_CHAR;
+        }
     }
 }
