@@ -1,5 +1,4 @@
 import Node from '../models/node';
-import * as status from '../meta/status';
 import * as actions from '../meta/actions';
 import { lastOf } from '../utils/logic';
 import { VOID_CHAR, positions } from '../meta/node';
@@ -8,7 +7,6 @@ import { sibify, edgeLeafOf, adjacentLeafOf } from '../utils/node';
 export default class State {
     constructor ({ nodes = []}, schema, rekey) {
         this.schema = schema;
-        this.status = new Map();
         this.nodes = nodes.map(s => new Node(s, rekey));
         this.schema.normalize(this.nodes);
     }
@@ -21,9 +19,8 @@ export default class State {
     }
 
     commit (operation) {
-        if (typeof this[operation.type] === 'function') {
+        return typeof this[operation.type] !== 'function' ? null :
             this[operation.type](operation.data, operation.meta, operation);
-        }
     }
 
     indexOf (key) {
@@ -51,10 +48,7 @@ export default class State {
 
         for (const key of keys) {
             const index = node.indexOf(key);
-            // if (this.status.get(key) !== status.STASHED) {
-                node.nodes[index] = node.nodes[index].clone(false);
-                // this.status.set(key, status.STASHED);
-            // }
+            node.nodes[index] = node.nodes[index].clone(false);
             node = node.nodes[index];
         }
 
@@ -75,6 +69,7 @@ export default class State {
         const node = this.stashNode(at);
         const text = node.text.replace(VOID_CHAR, '');
         node.text = text.slice(0, offset) + data + text.slice(offset + length);
+        return node;
     }
 
     [actions.REPLACE_NODES] (data, { at, length }) {
@@ -83,6 +78,7 @@ export default class State {
         if (index !== -1) {
             node.nodes.splice(index, length, ...data);
         }
+        return node;
     }
 
     [actions.INSERT_NODES] (data, { at, after }) {
@@ -91,6 +87,7 @@ export default class State {
         if (index !== -1) {
             node.nodes.splice(index + (after ? 1 : 0), 0, ...data);
         }
+        return node;
     }
 
     [actions.REMOVE_NODES] ({ root, anchor, focus }, { isBackwards }) {
@@ -99,6 +96,7 @@ export default class State {
         const focusIndex = node.indexOf(focus);
         const index = isBackwards ? focusIndex : anchorIndex;
         node.nodes.splice(index, Math.abs(focusIndex - anchorIndex) + 1);
+        return node;
     }
 
     [actions.EXTEND_NODE] (nodes, meta) {
@@ -106,11 +104,13 @@ export default class State {
         for (const n of nodes) {
             node.nodes = [node = n];
         }
+        return node;
     }
 
     [actions.CAST_NODE] (casted, { at }) {
         const node = this.stashNode(at.slice(0, -1));
         const index = node.indexOf(lastOf(at));
         node.nodes[index] = casted;
+        return node;
     }
 }

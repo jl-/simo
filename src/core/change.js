@@ -20,7 +20,7 @@ export default class Change {
     }
 
     commit (operation) {
-        this.state.commit(operation);
+        operation.to = this.state.commit(operation);
         this.operations.push(operation);
         this.selection.update(this.state, operation);
         return operation;
