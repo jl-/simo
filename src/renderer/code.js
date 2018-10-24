@@ -5,8 +5,6 @@ import { nodeTypes, VOID_CHAR } from '../meta/node';
 import { h, keyAttrs, sibling, edgeText } from '../utils/dom';
 import 'prismjs/themes/prism.css';
 
-window.prism = prism;
-
 export const Options = {
     tag: 'code',
     language: 'javascript'
@@ -21,9 +19,14 @@ export class Code extends Format {
         const $root = this.renderer.$nodeOf(node.key);
         while ($node && $node !== $root) {
             let $n = $node;
+            if ($n.textContent === VOID_CHAR && offset === 1) {
+                offset -= 1;
+            }
             while ($n = sibling($n, false, null)) {
                 offset += $n.textContent.length;
-                if ($n.tagName === 'DIV') offset += 1;
+                if ($n.tagName === 'DIV' && $n.textContent !== VOID_CHAR) {
+                    offset += 1;
+                }
             }
             $node = $node.parentElement;
         }
@@ -34,19 +37,17 @@ export class Code extends Format {
         let $n, $nodes = [$node], line;
         let offset = _offset < 0 ? $node.textContent.length : _offset;
         while ($n = $nodes.shift()) {
-            if ($n.nodeType === nodeTypes.COMMENT) continue;
-            if ($n.tagName === 'DIV') {
-                if (line) {
-                    offset -= 1;
-                } else {
-                    line = true;
-                }
-            }
             if ($n.nodeType === nodeTypes.TEXT) {
                 if (offset <= $n.textContent.length) {
                     break;
                 } else {
                     offset -= $n.textContent.length;
+                }
+            } else if ($n.tagName.toUpperCase() === 'DIV') {
+                if (line && $n.textContent !== VOID_CHAR) {
+                    offset -= 1;
+                } else {
+                    line = true;
                 }
             }
             if ($n.childNodes.length) $nodes.unshift(...$n.childNodes);
@@ -73,18 +74,17 @@ export class Code extends Format {
         const grammer = this.grammerOf(node);
         $code.appendChild(h('div'));
         for (const token of prism.tokenize(node.text, grammer)) {
-            if (/^\n+$/.test(token)) {
-                let count = token.length;
-                while (count--) {
-                    $code.appendChild(h('div'));
-                }
-                continue;
-            }
-            const $line = $code.lastChild;
             if (typeof token === 'string') {
-                $line.appendChild(h('span', null, token));
+                for (const str of token.split(/(\n)/)) {
+                    if (str === '\n') {
+                        $code.appendChild(h('div'));
+                    } else if (str) {
+                        $code.lastChild.appendChild(h('span', null, str));
+                    }
+                }
             } else {
-                $line.appendChild(h('span', { class: `token ${token.type}` }, token.content));
+                const attrs = { class: `token ${token.type}` };
+                $code.lastChild.appendChild(h('span', attrs, token.content));
             }
         }
         for (const $line of [...$code.childNodes]) {
@@ -98,7 +98,8 @@ export class Code extends Format {
         return $pre;
     }
 
-    [actions.REPLACE_TEXT] (operation, node) {
+    [actions.REPLACE_TEXT] (operation) {
+        const node = operation.to;
         const $node = this.renderer.$nodeOf(node.key);
         $node.replaceWith(this.render(node));
     }
