@@ -56,7 +56,6 @@ export default class Renderer {
     }
 
     removeNode ($node) {
-        console.log(getKey($node));
         $node.parentElement.removeChild($node);
     }
 
@@ -100,10 +99,10 @@ export default class Renderer {
     }
 
     setSelection (selection) {
-        const { start, end } = selection;
+        const { anchor, focus } = selection;
         selection.select(
-            this.$pointOf(start.nodes[0], start.offset),
-            this.$pointOf(end.nodes[0], end.offset)
+            this.$pointOf(anchor.nodes[0], anchor.offset),
+            this.$pointOf(focus.nodes[0], focus.offset)
         );
     }
 

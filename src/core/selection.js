@@ -44,11 +44,11 @@ export default class Selection {
     }
 
     select (anchor, focus = anchor) {
-        const range = new Range();
-        range.setStart(anchor.node, anchor.offset);
-        range.setEnd(focus.node, focus.offset);
         this.native.removeAllRanges();
-        this.native.addRange(range);
+        this.native.setBaseAndExtent(
+            anchor.node, anchor.offset,
+            focus.node, focus.offset
+        );
     }
 
     contains (keys) {
