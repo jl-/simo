@@ -67,3 +67,5 @@ editor.module('history', History/*, options*/);
 // finally, mount your editor with initial state
 editor.mount(renderer, {/* init state object */});
 ```
+
+![untitled](https://user-images.githubusercontent.com/6291986/47406636-f1adf100-d789-11e8-9c7a-b553f291a134.png)
