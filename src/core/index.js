@@ -31,7 +31,7 @@ export default class Editor {
         this.state = new State(state, this.schema);
 
         this.renderer = !(renderer instanceof HTMLElement) ? renderer :
-            new this.constructor.Renderer(renderer, options.renderer, this);
+            new this.constructor.Renderer(renderer, this, options.renderer);
 
         this.enable(!options.readonly);
 
