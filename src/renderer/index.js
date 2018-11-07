@@ -6,7 +6,7 @@ import { mergeFormats } from './options';
 import { getKey, sibling, edgeText } from '../utils/dom';
 
 export default class Renderer {
-    constructor (view, options = {}, editor) {
+    constructor (view, editor, options = {}) {
         this.view = view;
         this.editor = editor;
         this.options = options;
@@ -16,10 +16,6 @@ export default class Renderer {
         for (const name of Object.keys(formats)) {
             this.addFormat(name, formats[name]);
         }
-    }
-
-    of (format) {
-        return this.formats[format];
     }
 
     supports (format) {
@@ -51,12 +47,16 @@ export default class Renderer {
     }
 
     renderNode (node, mode, context) {
-        const format = this.formats[node.type || node];
+        const format = this.of(node);
         return format ? format.render(node, mode, context) : null;
     }
 
     removeNode ($node) {
         $node.parentElement.removeChild($node);
+    }
+
+    of (format) {
+        return this.formats[format.type || format];
     }
 
     $nodeOf (key) {

@@ -7,10 +7,6 @@ export default class Schema {
         this.inlineTypes = options.inlineTypes;
     }
 
-    of (format) {
-        return this.formats[format];
-    }
-
     supports (format) {
         return Boolean(this.of(format));
     }
@@ -40,6 +36,10 @@ export default class Schema {
         if (this.isInline(meta.node)) return !meta.isSolo;
         if (this.isBlock(meta.node)) return true;
         return !meta.parent;
+    }
+
+    of (format) {
+        return this.formats[format.type || format];
     }
 
     pipe (name, action, ...params) {
