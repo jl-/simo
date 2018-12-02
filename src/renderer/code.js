@@ -2,7 +2,7 @@ import prism from 'prismjs';
 import Format from './format';
 import * as actions from '../meta/actions';
 import { nodeTypes, VOID_CHAR } from '../meta/node';
-import { h, keyAttrs, sibling, edgeText } from '../utils/dom';
+import { $, h, keyAttrs, sibling, edgeText } from '../utils/dom';
 import 'prismjs/themes/prism.css';
 
 export const Options = {
@@ -15,9 +15,15 @@ export class Code extends Format {
         return !node.meta || node.meta.inline !== false;
     }
 
+    grammerOf (node) {
+        const lang = node.meta && node.meta.language;
+        return prism.languages[lang || this.language];
+    }
+
     pointOf ($node, offset, node) {
         const $root = this.renderer.$nodeOf(node.key);
-        while ($node && $node !== $root) {
+        const $code = this.isInline(node) ? $root : $($root, 'code');
+        while ($node && $node !== $code) {
             let $n = $node;
             if ($n.textContent === VOID_CHAR && offset === 1) {
                 offset -= 1;
@@ -58,11 +64,6 @@ export class Code extends Format {
         }
 
         return { node: $n, offset: Math.min(offset, $n.textContent.length) };
-    }
-
-    grammerOf (node) {
-        const lang = node.meta && node.meta.language;
-        return prism.languages[lang || this.language];
     }
 
     render (node, mode, context) {

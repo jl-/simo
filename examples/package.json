@@ -4,7 +4,8 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "vue": "parcel serve ./vue/index.html"
+    "vue": "parcel serve ./vue/index.html",
+    "build": "parcel build ./vue/index.html --public-url . --out-dir ../docs"
   },
   "devDependencies": {
     "@babel/cli": "^7.1.2",
@@ -18,7 +19,7 @@
     "@vue/component-compiler-utils": "^2.2.0",
     "cssnano": "^4.1.4",
     "normalize.css": "^8.0.0",
-    "parcel-bundler": "^1.10.2",
+    "parcel-bundler": "^1.10.3",
     "postcss": "^7.0.5",
     "postcss-modules": "^1.4.1",
     "postcss-preset-env": "^6.0.10",

@@ -1,93 +1,191 @@
 export default {
     nodes: [{
-        type: 'h2',
+        type: 'heading',
+        meta: { level: 1 },
         nodes: [{
             type: 'text',
-            text: 'Hello'
+            text: 'Simo'
         }]
     }, {
         type: 'blockquote',
         nodes: [{
             type: 'text',
-            text: 'hell'
+            text: 'Next '
         }, {
             type: 'text',
-            text: 'o w',
+            text: 'semantic',
             formats: ['bold']
         }, {
             type: 'text',
-            text: 'or'
+            text: ' rich text',
+            formats: ['bold', 'italic']
         }, {
             type: 'text',
-            text: 'ld',
-            formats: ['italic', 'bold']
+            text: ' editor.'
         }]
     }, {
-        type: 'paragraph',
+        type: 'heading',
+        meta: { level: 2 },
         nodes: [{
             type: 'text',
-            text: 'hello world !!!'
+            text: 'Features'
         }]
     }, {
-        type: 'paragraph',
+        type: 'list',
+        meta: { ordered: false },
         nodes: [{
-            type: 'text',
-            formats: ['bold'],
-            text: 'Hello '
-        }, {
-            type: 'link',
-            text: 'World',
-            data: { href: '/' },
-            meta: { frozen: true }
-        }, {
-            type: 'text',
-            formats: ['italic'],
-            text: ' !!!'
-        }]
-    }, {
-        type: 'blockquote',
-        nodes: [{
-            type: 'block',
+            type: 'li',
             nodes: [{
                 type: 'text',
-                text: 'block text'
+                text: 'no '
+            }, {
+                type: 'code',
+                text: 'document.execCommand'
             }]
         }, {
-            type: 'blockquote',
+            type: 'li',
+            nodes: [{
+                type: 'code',
+                text: 'state'
+            }, {
+                type: 'text',
+                text: ' → '
+            }, {
+                type: 'code',
+                text: 'renderer'
+            }, {
+                type: 'text',
+                text: ' mechanism.'
+            }]
+        }, {
+            type: 'li',
+            nodes: [{
+                type: 'text',
+                text: 'driven by user-defined '
+            }, {
+                type: 'code',
+                text: 'schema'
+            }]
+        }, {
+            type: 'li',
+            nodes: [{
+                type: 'text',
+                text: 'flexible yet lightweight '
+            }, {
+                type: 'text',
+                text: 'plugin/module',
+                formats: ['bold']
+            }, {
+                type: 'text',
+                text: ' system'
+            }]
+        }]
+    }, {
+        type: 'heading',
+        meta: { level: 2 },
+        nodes: [{
+            type: 'text',
+            text: 'TODO'
+        }]
+    }, {
+        type: 'list',
+        nodes: [{
+            type: 'li',
+            nodes: [{
+                type: 'text',
+                text: 'History/Autosave support'
+            }]
+        }, {
+            type: 'li',
+            nodes: [{
+                type: 'text',
+                text: 'Copy/Past support'
+            }]
+        }, {
+            type: 'li',
+            nodes: [{
+                type: 'text',
+                text: 'Delete/Backspace/Enter improvement'
+            }]
+        }, {
+            type: 'li',
+            nodes: [{
+                type: 'text',
+                text: 'Task List'
+            }]
+        }]
+    }, {
+        type: 'heading',
+        meta: { level: 2 },
+        nodes: [{
+            type: 'text',
+            text: 'About this demo'
+        }]
+    }, {
+        type: 'list',
+        nodes: [{
+            type: 'li',
             nodes: [{
                 type: 'block',
                 nodes: [{
                     type: 'text',
-                    text: 'sssss'
-                }, {
-                    type: 'text',
-                    text: 'aaaa',
-                    formats: ['bold']
-                }, {
-                    type: 'text',
-                    text: 'cccc',
-                    formats: ['italic']
+                    text: 'include a markdown module, with following features supported'
                 }]
             }, {
-                type: 'paragraph',
+                type: 'list',
+                nodes: [{
+                    type: 'li',
+                    nodes: [{
+                        type: 'text',
+                        text: 'blockquote '
+                    }, {
+                        type: 'code',
+                        text: '/^> /'
+                    }]
+                }, {
+                    type: 'li',
+                    nodes: [{
+                        type: 'text',
+                        text: 'heading '
+                    }, {
+                        type: 'code',
+                        text: '/^#{1,6} /'
+                    }]
+                }, {
+                    type: 'li',
+                    nodes: [{
+                        type: 'text',
+                        text: 'li '
+                    }, {
+                        type: 'code',
+                        text: '/^(^|1\.) /'
+                    }]
+                }]
+            }]
+        }, {
+            type: 'li',
+            nodes: [{
+                type: 'text',
+                text: 'editor instance exposed as: '
+            }, {
+                type: 'code',
+                text: 'window.editor'
+            }, {
+                type: 'text',
+                text: ', feel free to open console and inspect it'
+            }]
+        }, {
+            type: 'li',
+            nodes: [{
+                type: 'block',
                 nodes: [{
                     type: 'text',
-                    text: 'lsellllll'
+                    text: 'editable code block'
                 }]
             }, {
-                type: 'blockquote',
-                nodes: [{
-                    type: 'text',
-                    text: 'hell',
-                    formats: ['bold']
-                }, {
-                    type: 'text',
-                    text: 'o w'
-                }, {
-                    type: 'text',
-                    text: 'orld!!!',
-                    formats: ['italic']
-                }]
+                type: 'code',
+                text: "import Editor from 'simo/core';\nimport Renderer from 'simo/renderer';\nimport Hypergen from 'simo/modules/hypergen';\nimport Markdown from 'simo/modules/markdown';\n\nconst editor = new Editor({...});\nconst renderer = new Renderer('#editor', editor);\neditor.module('hypergen', Hypergen[, options]);\neditor.module('markdown', Markdown[, options]);\n\neditor.mount(renderer, {/* init state */});",
+                meta: { inline: false, language: 'javascript' }
             }]
         }]
     }]

@@ -4,6 +4,7 @@
             :class="$.editor"
             class="simo"
             data-gramm="false"
+            spellcheck="false"
         />
     </div>
 </template>
@@ -16,12 +17,18 @@
         mounted () {
             this.editor = new Editor({ readonly: false });
             this.editor.mount(this.$refs.editor, initState);
+            window.editor = this.editor;
         }
     };
 </script>
 
 <style lang="scss" module="$">
-    .editor {
+    .editor:global(.simo) {
+        margin: 1em;
+        padding: 1em;
         border: 1px solid #eee;
+        blockquote {
+            border-left: 3px solid #ddd;
+        }
     }
 </style>

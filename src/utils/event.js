@@ -12,15 +12,15 @@ const isPassiveEventSupported = (() => {
     return () => isSupported;
 })();
 
-function sanitizeEventOptions (options = {}) {
+function coerceEventOptions (options = {}) {
     const passive = isPassiveEventSupported();
     return passive ? options : Boolean(options.capture);
 }
 
 export function on (el, evtn, func, options) {
-    el.addEventListener(evtn, func, sanitizeEventOptions(options));
+    el.addEventListener(evtn, func, coerceEventOptions(options));
 }
 
 export function off (el, evtn, func, options) {
-    el.removeEventListener(evtn, func, sanitizeEventOptions(options));
+    el.removeEventListener(evtn, func, coerceEventOptions(options));
 }

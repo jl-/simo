@@ -7,7 +7,6 @@
   "author": "z.cius <zr.cius@gmail.com>",
   "license": "MIT",
   "scripts": {
-    "test": "cross-env NODE_ENV=test tupe",
     "build:release": "babel src -d . --copy-files",
     "build:clear": "rm -rf ./core ./formats ./meta ./models ./modules ./renderer ./styles ./utils ./index.js"
   },
@@ -21,23 +20,11 @@
     "@babel/polyfill": "^7.0.0",
     "@babel/preset-env": "^7.1.0",
     "@babel/runtime": "^7.1.2",
-    "babel-plugin-istanbul": "^5.1.0",
-    "babel-preset-power-assert": "^3.0.0",
     "cross-env": "^5.2.0",
-    "testdouble": "^3.8.2",
-    "tupe": "^0.0.0-alpha.0"
+    "prettier": "^1.15.3",
+    "sass": "^1.14.2"
   },
-  "tupe": {
-    "files": [
-      "test/**/!(_)*.js"
-    ],
-    "tmpdir": ".tmp",
-    "fail-fast": false,
-    "coverage": {
-      "dir": ".coverage",
-      "reporters": [
-        "text"
-      ]
-    }
+  "dependencies": {
+    "prismjs": "^1.15.0"
   }
 }
