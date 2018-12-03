@@ -22,7 +22,7 @@
     "@babel/runtime": "^7.1.2",
     "cross-env": "^5.2.0",
     "prettier": "^1.15.3",
-    "sass": "^1.14.2"
+    "sass": "^1.15.1"
   },
   "dependencies": {
     "prismjs": "^1.15.0"
